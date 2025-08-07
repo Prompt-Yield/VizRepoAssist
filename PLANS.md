@@ -25,28 +25,31 @@
 
 ## 📋 Phase 2: Core Screenshot Engine
 
-### ⏳ Pending Tasks
-- [ ] **Screenshot Capture**
-  - [ ] Set up Puppeteer with basic browser management
-  - [ ] Implement simple viewport switching (desktop/mobile)
-  - [ ] Create JPEG screenshot capture function
-  - [ ] Add basic error handling
+### ✅ Completed Tasks
+- [x] **Screenshot Capture**
+  - [x] Set up Puppeteer with basic browser management
+  - [x] Implement simple viewport switching (desktop/mobile)
+  - [x] Create JPEG screenshot capture function
+  - [x] Add basic error handling
 
-- [ ] **Simple Route Discovery**
-  - [ ] Scan Next.js pages directory for routes
-  - [ ] Basic route list generation
-  - [ ] Simple include/exclude filtering
+- [x] **Simple Route Discovery**
+  - [x] Scan Next.js pages directory for routes
+  - [x] Basic route list generation
+  - [x] Simple include/exclude filtering
+  - [x] Support both App Router and Pages Router
 
 ---
 
 ## 📋 Phase 3: File Management
 
-### ⏳ Pending Tasks
-- [ ] **Simple Storage System**
-  - [ ] Create `.vizrepo/screenshots/` directory structure
-  - [ ] Implement `{commit-hash}_{timestamp}` naming
-  - [ ] Basic file organization (desktop/mobile folders)
-  - [ ] Simple cleanup (keep last N commits)
+### ✅ Completed Tasks
+- [x] **Simple Storage System**
+  - [x] Create `.vizrepo/screenshots/` directory structure
+  - [x] Implement `{commit-hash}_{timestamp}_{branch}` naming
+  - [x] Basic file organization (desktop/mobile folders)
+  - [x] Simple cleanup (keep last N commits)
+  - [x] Git integration for commit hash and branch detection
+  - [x] Metadata tracking with index.json
 
 ---
 
@@ -131,12 +134,12 @@ VizRepoAssist/
 
 ## 📊 Progress Tracking
 
-**Overall Progress:** 10/25 tasks completed (~40%)
+**Overall Progress:** 22/25 tasks completed (~88%)
 
 ### Phase Status
 - **Phase 1:** 10/10 tasks (100% complete) ✅
-- **Phase 2:** 0/6 tasks (0% complete) ⚪
-- **Phase 3:** 0/4 tasks (0% complete) ⚪
+- **Phase 2:** 6/6 tasks (100% complete) ✅  
+- **Phase 3:** 6/6 tasks (100% complete) ✅
 - **Phase 4:** 0/5 tasks (0% complete) ⚪
 - **Phase 5:** 0/3 tasks (0% complete) ⚪
 - **Phase 6:** 0/4 tasks (0% complete) ⚪
@@ -152,10 +155,10 @@ VizRepoAssist/
 4. [ ] **NEXT: Get basic screenshot capture working**
 5. [ ] Test with a simple Next.js app
 
-### Ready for Phase 2: Core Screenshot Engine
-- Set up new branch: `feature/screenshot-engine`
-- Implement Puppeteer browser management
-- Create basic screenshot capture function
+### Ready for Phase 4: Git Integration
+- Implement git utilities for repository status
+- Create pre-commit hook system
+- Enable automatic screenshot capture on commits
 
 ---
 
