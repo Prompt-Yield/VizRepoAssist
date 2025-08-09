@@ -760,6 +760,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 [Examples](https://github.com/Prompt-Yield/VizRepoAssist/examples) • 
 [Contributing](https://github.com/Prompt-Yield/VizRepoAssist#-development)
 
-Made with ❤️ by the VizRepoAssist team
+Made with ❤️ by the [Prompt Yield](https://promptyield.com) team
 
 </div>
