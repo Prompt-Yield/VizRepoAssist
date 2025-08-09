@@ -5,7 +5,6 @@ import { GitManager } from './git';
 import { HookInstaller } from './hook-installer';
 
 export interface OrchestrationOptions {
-  projectRoot: string;
   baseUrl?: string;
   includeRoutes?: string[];
   excludeRoutes?: string[];
