@@ -41,13 +41,18 @@ export class ScreenshotCapture {
 
     try {
       this.browser = await puppeteer.launch({
-        headless: true,
+        headless: 'new', // Use new headless mode
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
+          '--disable-web-security',
+          '--disable-features=VizDisplayCompositor',
           '--disable-background-timer-throttling',
+          '--disable-renderer-backgrounding',
+          '--disable-backgrounding-occluded-windows',
         ],
+        timeout: 30000, // 30 second timeout
       });
     } catch (error) {
       throw new Error(`Failed to launch browser: ${error}`);
