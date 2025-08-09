@@ -722,9 +722,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Puppeteer Team** - For the excellent browser automation library
-- **Next.js Team** - For the inspiring framework architecture
-- **MCP Protocol** - For the standardized AI tool integration
+- **[Puppeteer Team](https://pptr.dev/)** - For the excellent browser automation library
+- **[Next.js Team](https://nextjs.org/)** - For the inspiring framework architecture
+- **[MCP Protocol](https://modelcontextprotocol.io/)** - For the standardized AI tool integration
 - **Open Source Community** - For the tools and libraries that make this possible
 
 ---
