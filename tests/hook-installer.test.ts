@@ -3,7 +3,9 @@ import * as path from 'path';
 
 // Mock modules
 jest.mock('fs');
-jest.mock('../src/git');
+jest.mock('../src/git', () => ({
+  GitManager: jest.fn(),
+}));
 
 // Import after mocking
 const fs = require('fs');
@@ -15,7 +17,6 @@ describe('HookInstaller', () => {
   let mockGitManager: any;
 
   beforeEach(() => {
-    hookInstaller = new HookInstaller(testProjectRoot);
     jest.clearAllMocks();
 
     // Mock GitManager
@@ -23,9 +24,9 @@ describe('HookInstaller', () => {
       isGitRepository: jest.fn().mockReturnValue(true),
       getHooksDirectory: jest.fn().mockReturnValue('/test/project/.git/hooks'),
       validateGitInstallation: jest.fn().mockReturnValue(true),
-    } as any;
+    };
 
-    // Replace the real GitManager with our mock
+    // Setup GitManager mock
     (GitManager as jest.MockedClass<typeof GitManager>).mockImplementation(() => mockGitManager);
 
     // Default fs mocks
@@ -37,13 +38,25 @@ describe('HookInstaller', () => {
     fs.writeFileSync = jest.fn();
     fs.unlinkSync = jest.fn();
     fs.statSync = jest.fn().mockReturnValue({ mode: 0o755 });
+
+    // Create HookInstaller after mocks are setup
+    hookInstaller = new HookInstaller(testProjectRoot);
   });
 
   describe('installPreCommitHook', () => {
     beforeEach(() => {
-      // Mock template file exists
+      // Mock template file exists and hooks directory doesn't exist initially
       fs.existsSync = jest.fn().mockImplementation((filePath: string) => {
-        return filePath.includes('hooks/pre-commit');
+        if (filePath.includes('hooks/pre-commit') && !filePath.includes('.git/hooks')) {
+          return true; // Template file exists
+        }
+        if (filePath.includes('.git/hooks/pre-commit')) {
+          return false; // Hook doesn't exist initially
+        }
+        if (filePath.includes('.git/hooks')) {
+          return false; // Hooks directory doesn't exist initially
+        }
+        return false;
       });
     });
 
@@ -334,7 +347,7 @@ describe('HookInstaller', () => {
 
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         path.join(testProjectRoot, '.vizrepo/index.json'),
-        expect.stringContaining('"sessions": []'),
+        expect.stringMatching(/"sessions":\s*\[\]/),
         undefined
       );
     });

@@ -13,10 +13,18 @@ describe('ScreenshotCapture', () => {
   });
 
   afterAll(async () => {
-    await capture.close();
+    try {
+      await capture.close();
+    } catch (error) {
+      // Ignore close errors in tests
+    }
     // Clean up temp directory
     if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true });
+      try {
+        fs.rmSync(tempDir, { recursive: true });
+      } catch (error) {
+        // Ignore cleanup errors
+      }
     }
   });
 
