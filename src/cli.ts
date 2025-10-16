@@ -29,14 +29,18 @@ class VizRepoCli {
     for (let i = 1; i < args.length; i++) {
       const arg = args[i];
       if (!arg) continue;
-      
+
       if (arg.startsWith('--')) {
         const [key, value] = arg.slice(2).split('=');
         if (!key) continue;
-        
+
         if (value !== undefined) {
           options[key] = value;
-        } else if (i + 1 < args.length && args[i + 1] && !args[i + 1]!.startsWith('-')) {
+        } else if (
+          i + 1 < args.length &&
+          args[i + 1] &&
+          !args[i + 1]!.startsWith('-')
+        ) {
           options[key] = args[i + 1]!;
           i++;
         } else {
@@ -95,16 +99,20 @@ class VizRepoCli {
           break;
       }
     } catch (error) {
-      console.error(`❌ Error: ${error instanceof Error ? error.message : error}`);
+      console.error(
+        `❌ Error: ${error instanceof Error ? error.message : error}`
+      );
       process.exit(1);
     }
   }
 
-  private async handleInit(options: Record<string, string | boolean>): Promise<void> {
+  private async handleInit(
+    options: Record<string, string | boolean>
+  ): Promise<void> {
     console.log('🚀 Initializing VizRepoAssist...\n');
 
     const installHook = !options['no-hook'];
-    
+
     // Initialize project
     const initResult = await this.orchestrator.initialize();
     if (!initResult.success) {
@@ -117,8 +125,10 @@ class VizRepoCli {
     // Install hook if requested
     if (installHook) {
       console.log('🔗 Installing pre-commit hook...');
-      const hookResult = await this.orchestrator.installHook(Boolean(options.force));
-      
+      const hookResult = await this.orchestrator.installHook(
+        Boolean(options.force)
+      );
+
       if (hookResult.success) {
         console.log(`✅ ${hookResult.message}`);
       } else {
@@ -130,14 +140,20 @@ class VizRepoCli {
 
     console.log('\n🎉 VizRepoAssist is ready!');
     console.log('💡 Run "vizrepo capture" to take screenshots manually');
-    console.log('💡 Or just commit - screenshots will be captured automatically!');
+    console.log(
+      '💡 Or just commit - screenshots will be captured automatically!'
+    );
   }
 
-  private async handleCapture(options: Record<string, string | boolean>): Promise<void> {
+  private async handleCapture(
+    options: Record<string, string | boolean>
+  ): Promise<void> {
     console.log('📸 Capturing screenshots...\n');
 
     const baseUrl = (options.url as string) || 'http://localhost:3000';
-    const routes = options.routes ? (options.routes as string).split(',') : undefined;
+    const routes = options.routes
+      ? (options.routes as string).split(',')
+      : undefined;
     const skipServerCheck = Boolean(options['no-server-check']);
 
     const result = await this.orchestrator.captureScreenshots({
@@ -158,13 +174,16 @@ class VizRepoCli {
       console.error(`❌ ${result.message}`);
       if (result.errors && result.errors.length > 0) {
         console.error('Errors:');
-        result.errors.forEach(error => console.error(`  • ${error}`));
+        result.errors.forEach((error) => console.error(`  • ${error}`));
       }
       process.exit(1);
     }
   }
 
-  private async handleHook(action: string, options: Record<string, string | boolean>): Promise<void> {
+  private async handleHook(
+    action: string,
+    options: Record<string, string | boolean>
+  ): Promise<void> {
     const hookInstaller = new HookInstaller(this.projectRoot);
 
     switch (action) {
@@ -174,7 +193,7 @@ class VizRepoCli {
           projectRoot: this.projectRoot,
           force: Boolean(options.force),
         });
-        
+
         if (installResult.success) {
           console.log(`✅ ${installResult.message}`);
         } else {
@@ -187,7 +206,7 @@ class VizRepoCli {
       case 'remove':
         console.log('🗑️  Uninstalling pre-commit hook...');
         const uninstallResult = await hookInstaller.uninstallPreCommitHook();
-        
+
         if (uninstallResult.success) {
           console.log(`✅ ${uninstallResult.message}`);
         } else {
@@ -198,9 +217,13 @@ class VizRepoCli {
 
       case 'status':
         const status = hookInstaller.getHookStatus();
-        console.log(`🔗 Hook Status: ${status.installed ? '✅ Installed' : '❌ Not installed'}`);
+        console.log(
+          `🔗 Hook Status: ${status.installed ? '✅ Installed' : '❌ Not installed'}`
+        );
         if (status.installed && status.isVizRepoHook !== undefined) {
-          console.log(`📝 VizRepo Hook: ${status.isVizRepoHook ? '✅ Yes' : '⚠️  No (custom hook detected)'}`);
+          console.log(
+            `📝 VizRepo Hook: ${status.isVizRepoHook ? '✅ Yes' : '⚠️  No (custom hook detected)'}`
+          );
         }
         break;
 
@@ -210,7 +233,9 @@ class VizRepoCli {
         console.log('  vizrepo hook uninstall - Remove pre-commit hook');
         console.log('  vizrepo hook status    - Check hook status');
         console.log('\nOptions:');
-        console.log('  --force               - Force installation even if hook exists');
+        console.log(
+          '  --force               - Force installation even if hook exists'
+        );
         break;
     }
   }
@@ -224,7 +249,9 @@ class VizRepoCli {
       // Project info
       console.log(`📁 Project: ${this.projectRoot}`);
       console.log(`🔧 Git Repository: ${status.gitRepository ? '✅' : '❌'}`);
-      console.log(`⚙️  VizRepo Initialized: ${status.vizRepoInitialized ? '✅' : '❌'}`);
+      console.log(
+        `⚙️  VizRepo Initialized: ${status.vizRepoInitialized ? '✅' : '❌'}`
+      );
       console.log(`🔗 Hook Installed: ${status.hookInstalled ? '✅' : '❌'}`);
 
       if (status.gitRepository) {
@@ -244,21 +271,22 @@ class VizRepoCli {
           console.log(`  ${index + 1}. ${session.sessionId} (${date})`);
         });
       }
-
     } catch (error) {
       console.error(`❌ Error getting status: ${error}`);
       process.exit(1);
     }
   }
 
-  private async handleList(options: Record<string, string | boolean>): Promise<void> {
+  private async handleList(
+    options: Record<string, string | boolean>
+  ): Promise<void> {
     const limit = parseInt(options.limit as string) || 10;
-    
+
     console.log(`📸 Screenshot Sessions (last ${limit}):\n`);
 
     try {
       const sessions = await this.orchestrator.listSessions(limit);
-      
+
       if (sessions.length === 0) {
         console.log('No screenshot sessions found.');
         console.log('💡 Run "vizrepo capture" to create your first session!');
@@ -270,8 +298,12 @@ class VizRepoCli {
         console.log(`${index + 1}. ${session.sessionId}`);
         console.log(`   📅 ${date}`);
         console.log(`   🌿 ${session.branch} (${session.commitHash})`);
-        console.log(`   📁 ${path.relative(this.projectRoot, session.desktopPath)}`);
-        console.log(`   📱 ${path.relative(this.projectRoot, session.mobilePath)}`);
+        console.log(
+          `   📁 ${path.relative(this.projectRoot, session.desktopPath)}`
+        );
+        console.log(
+          `   📱 ${path.relative(this.projectRoot, session.mobilePath)}`
+        );
         console.log('');
       });
     } catch (error) {
@@ -285,7 +317,7 @@ class VizRepoCli {
 
     try {
       const result = await this.orchestrator.cleanup();
-      
+
       if (result.success) {
         console.log(`✅ ${result.message}`);
       } else {
@@ -298,7 +330,11 @@ class VizRepoCli {
     }
   }
 
-  private async handleConfig(action: string, key?: string, options: Record<string, string | boolean> = {}): Promise<void> {
+  private async handleConfig(
+    action: string,
+    key?: string,
+    options: Record<string, string | boolean> = {}
+  ): Promise<void> {
     const configPath = path.join(this.projectRoot, 'vizrepo.config.js');
 
     switch (action) {
@@ -310,7 +346,9 @@ class VizRepoCli {
           console.log(content);
         } else {
           console.log('⚙️  No configuration file found.');
-          console.log('💡 Run "vizrepo config init" to create default configuration.');
+          console.log(
+            '💡 Run "vizrepo config init" to create default configuration.'
+          );
         }
         break;
 
@@ -350,8 +388,12 @@ class VizRepoCli {
       default:
         console.log('Configuration commands:');
         console.log('  vizrepo config show    - Display current configuration');
-        console.log('  vizrepo config init    - Create default configuration file');
-        console.log('  vizrepo config reset   - Reset to default configuration');
+        console.log(
+          '  vizrepo config init    - Create default configuration file'
+        );
+        console.log(
+          '  vizrepo config reset   - Reset to default configuration'
+        );
         break;
     }
   }

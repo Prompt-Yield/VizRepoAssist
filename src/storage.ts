@@ -34,8 +34,11 @@ export class StorageManager {
       baseDirectory: '.vizrepo',
       ...options,
     };
-    
-    this.baseDir = path.join(this.options.projectRoot, this.options.baseDirectory!);
+
+    this.baseDir = path.join(
+      this.options.projectRoot,
+      this.options.baseDirectory!
+    );
     this.screenshotsDir = path.join(this.baseDir, 'screenshots');
     this.metadataPath = path.join(this.baseDir, 'index.json');
   }
@@ -48,7 +51,7 @@ export class StorageManager {
       // Create base directories
       await this.ensureDirectory(this.baseDir);
       await this.ensureDirectory(this.screenshotsDir);
-      
+
       // Initialize metadata file if it doesn't exist
       if (!this.fileExists(this.metadataPath)) {
         const initialMetadata: StorageMetadata = {
@@ -71,10 +74,10 @@ export class StorageManager {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const commitHash = this.getCurrentCommitHash();
     const branch = this.getCurrentBranch();
-    
+
     const sessionId = `${commitHash}_${timestamp}_${branch}`;
     const sessionDir = path.join(this.screenshotsDir, sessionId);
-    
+
     // Create session directory and viewport subdirectories
     await this.ensureDirectory(sessionDir);
     const desktopPath = path.join(sessionDir, 'desktop');
@@ -109,8 +112,9 @@ export class StorageManager {
     // Convert route path to safe filename
     const safeRouteName = this.routeToFileName(routePath);
     const fileName = `${safeRouteName}_${viewportSize.width}x${viewportSize.height}.jpg`;
-    
-    const viewportDir = viewport === 'desktop' ? session.desktopPath : session.mobilePath;
+
+    const viewportDir =
+      viewport === 'desktop' ? session.desktopPath : session.mobilePath;
     return path.join(viewportDir, fileName);
   }
 
@@ -119,19 +123,23 @@ export class StorageManager {
    */
   public async cleanup(): Promise<void> {
     const metadata = await this.loadMetadata();
-    
+
     if (metadata.sessions.length <= this.options.maxCommits!) {
       return;
     }
 
     // Sort sessions by timestamp (oldest first)
-    const sortedSessions = [...metadata.sessions].sort((a, b) => 
-      new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    const sortedSessions = [...metadata.sessions].sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
 
     // Remove oldest sessions
-    const sessionsToRemove = sortedSessions.slice(0, sortedSessions.length - this.options.maxCommits!);
-    
+    const sessionsToRemove = sortedSessions.slice(
+      0,
+      sortedSessions.length - this.options.maxCommits!
+    );
+
     for (const session of sessionsToRemove) {
       const sessionDir = path.join(this.screenshotsDir, session.sessionId);
       if (this.directoryExists(sessionDir)) {
@@ -140,8 +148,11 @@ export class StorageManager {
     }
 
     // Update metadata
-    const remainingSessions = metadata.sessions.filter(session => 
-      !sessionsToRemove.some(removed => removed.sessionId === session.sessionId)
+    const remainingSessions = metadata.sessions.filter(
+      (session) =>
+        !sessionsToRemove.some(
+          (removed) => removed.sessionId === session.sessionId
+        )
     );
 
     metadata.sessions = remainingSessions;
@@ -154,8 +165,9 @@ export class StorageManager {
    */
   public async getSessions(): Promise<CaptureSession[]> {
     const metadata = await this.loadMetadata();
-    return metadata.sessions.sort((a, b) => 
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return metadata.sessions.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
   }
 
@@ -172,12 +184,14 @@ export class StorageManager {
    */
   private routeToFileName(routePath: string): string {
     // Convert route path to safe filename
-    return routePath
-      .replace(/^\//, '') // Remove leading slash
-      .replace(/\/$/, '') // Remove trailing slash
-      .replace(/\//g, '_') // Replace slashes with underscores
-      .replace(/[^a-zA-Z0-9_-]/g, '') // Remove special characters
-      || 'home'; // Default to 'home' for root route
+    return (
+      routePath
+        .replace(/^\//, '') // Remove leading slash
+        .replace(/\/$/, '') // Remove trailing slash
+        .replace(/\//g, '_') // Replace slashes with underscores
+        .replace(/[^a-zA-Z0-9_-]/g, '') || // Remove special characters
+      'home'
+    ); // Default to 'home' for root route
   }
 
   /**
@@ -185,7 +199,7 @@ export class StorageManager {
    */
   private getCurrentCommitHash(): string {
     try {
-      return execSync('git rev-parse --short HEAD', { 
+      return execSync('git rev-parse --short HEAD', {
         cwd: this.options.projectRoot,
         encoding: 'utf8',
       }).trim();
@@ -200,7 +214,7 @@ export class StorageManager {
    */
   private getCurrentBranch(): string {
     try {
-      return execSync('git rev-parse --abbrev-ref HEAD', { 
+      return execSync('git rev-parse --abbrev-ref HEAD', {
         cwd: this.options.projectRoot,
         encoding: 'utf8',
       }).trim();

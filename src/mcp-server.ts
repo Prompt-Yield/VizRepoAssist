@@ -45,13 +45,12 @@ class VizRepoMCPServer {
 
   constructor() {
     this.projectRoot = process.cwd();
-    this.server = new Server(
-      {
-        name: 'vizrepo-assist',
-        version: '0.1.0',
-        description: 'Visual development artifacts MCP server - captures screenshots during development',
-      }
-    );
+    this.server = new Server({
+      name: 'vizrepo-assist',
+      version: '0.1.0',
+      description:
+        'Visual development artifacts MCP server - captures screenshots during development',
+    });
 
     this.orchestrator = new VizRepoOrchestrator(this.projectRoot);
     this.setupToolHandlers();
@@ -75,19 +74,22 @@ class VizRepoMCPServer {
         tools: [
           {
             name: 'capture_screenshots',
-            description: 'Capture screenshots of your web application for the current commit',
+            description:
+              'Capture screenshots of your web application for the current commit',
             inputSchema: {
               type: 'object',
               properties: {
                 baseUrl: {
                   type: 'string',
-                  description: 'Base URL of your development server (default: http://localhost:3000)',
+                  description:
+                    'Base URL of your development server (default: http://localhost:3000)',
                   default: 'http://localhost:3000',
                 },
                 routes: {
                   type: 'array',
                   items: { type: 'string' },
-                  description: 'Specific routes to capture (optional, auto-discovers if not provided)',
+                  description:
+                    'Specific routes to capture (optional, auto-discovers if not provided)',
                 },
                 skipServerCheck: {
                   type: 'boolean',
@@ -99,7 +101,8 @@ class VizRepoMCPServer {
           },
           {
             name: 'get_project_status',
-            description: 'Get the current status of VizRepoAssist in this project',
+            description:
+              'Get the current status of VizRepoAssist in this project',
             inputSchema: {
               type: 'object',
               properties: {},
@@ -127,7 +130,8 @@ class VizRepoMCPServer {
               properties: {
                 force: {
                   type: 'boolean',
-                  description: 'Force installation even if a hook already exists',
+                  description:
+                    'Force installation even if a hook already exists',
                   default: false,
                 },
               },
@@ -168,7 +172,8 @@ class VizRepoMCPServer {
                 },
                 config: {
                   type: 'object',
-                  description: 'Configuration object to set (when action is "set")',
+                  description:
+                    'Configuration object to set (when action is "set")',
                   additionalProperties: true,
                 },
               },
@@ -226,8 +231,9 @@ class VizRepoMCPServer {
         if (error instanceof McpError) {
           throw error;
         }
-        
-        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         throw new McpError(
           ErrorCode.InternalError,
           `Tool execution failed: ${errorMessage}`
@@ -237,7 +243,11 @@ class VizRepoMCPServer {
   }
 
   private async handleCaptureScreenshots(args: any) {
-    const { baseUrl = 'http://localhost:3000', routes, skipServerCheck = false } = args;
+    const {
+      baseUrl = 'http://localhost:3000',
+      routes,
+      skipServerCheck = false,
+    } = args;
 
     const result = await this.orchestrator.captureScreenshots({
       baseUrl,
@@ -435,7 +445,7 @@ class VizRepoMCPServer {
 
       // Read and display the configuration file content
       const configContent = fs.readFileSync(configPath, 'utf8');
-      
+
       return {
         content: [
           {
@@ -459,7 +469,7 @@ class VizRepoMCPServer {
   private setConfiguration(configPath: string, config: VizRepoConfig) {
     try {
       const configContent = `module.exports = ${JSON.stringify(config, null, 2)};`;
-      
+
       fs.writeFileSync(configPath, configContent, 'utf8');
 
       return {
@@ -550,7 +560,7 @@ class VizRepoMCPServer {
   public async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    
+
     console.error('VizRepoAssist MCP server started');
   }
 }

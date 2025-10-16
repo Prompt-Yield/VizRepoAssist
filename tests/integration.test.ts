@@ -26,8 +26,13 @@ describe('Integration Tests', () => {
 
   describe('Full Screenshot Workflow', () => {
     beforeEach(() => {
-      // Create mock Next.js app structure
+      // Clean up any existing app structure first
       const appDir = path.join(tempDir, 'app');
+      if (fs.existsSync(appDir)) {
+        fs.rmSync(appDir, { recursive: true });
+      }
+      
+      // Create mock Next.js app structure
       fs.mkdirSync(appDir, { recursive: true });
       
       // Root page

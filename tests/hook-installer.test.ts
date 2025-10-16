@@ -345,11 +345,16 @@ describe('HookInstaller', () => {
 
       hookInstaller.initializeVizRepoDirectory();
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        path.join(testProjectRoot, '.vizrepo/index.json'),
-        expect.stringMatching(/"sessions":\s*\[\]/),
-        undefined
+      // Verify the call was made with valid JSON containing sessions array
+      const writeCall = (fs.writeFileSync as jest.Mock).mock.calls.find(call => 
+        call[0].includes('index.json')
       );
+      expect(writeCall).toBeDefined();
+      expect(writeCall[0]).toBe(path.join(testProjectRoot, '.vizrepo/index.json'));
+      
+      const jsonContent = JSON.parse(writeCall[1]);
+      expect(jsonContent.sessions).toEqual([]);
+      expect(jsonContent.lastCleanup).toBeDefined();
     });
 
     it('should not overwrite existing metadata file', () => {

@@ -124,7 +124,10 @@ export class GitManager {
         }
       }
 
-      const hasChanges = stagedFiles.length > 0 || modifiedFiles.length > 0 || untrackedFiles.length > 0;
+      const hasChanges =
+        stagedFiles.length > 0 ||
+        modifiedFiles.length > 0 ||
+        untrackedFiles.length > 0;
 
       return {
         isRepository: true,
@@ -166,8 +169,8 @@ export class GitManager {
       }).trim();
 
       // Handle relative git dir (e.g., ".git")
-      const fullGitDir = path.isAbsolute(gitDir) 
-        ? gitDir 
+      const fullGitDir = path.isAbsolute(gitDir)
+        ? gitDir
         : path.join(this.projectRoot, gitDir);
 
       return path.join(fullGitDir, 'hooks');
@@ -181,7 +184,7 @@ export class GitManager {
    */
   public getRepositoryInfo(): GitRepositoryInfo {
     const isRepository = this.isGitRepository();
-    
+
     let gitDir = '';
     if (isRepository) {
       try {
@@ -189,7 +192,7 @@ export class GitManager {
           cwd: this.projectRoot,
           encoding: 'utf8',
         }).trim();
-        
+
         if (!path.isAbsolute(gitDir)) {
           gitDir = path.join(this.projectRoot, gitDir);
         }
@@ -238,15 +241,15 @@ export class GitManager {
         encoding: 'utf8',
       }).trim();
 
-      const fullGitDir = path.isAbsolute(gitDir) 
-        ? gitDir 
+      const fullGitDir = path.isAbsolute(gitDir)
+        ? gitDir
         : path.join(this.projectRoot, gitDir);
 
       // Check for common git operation indicators
       const fs = require('fs');
       const operationFiles = [
         'MERGE_HEAD',
-        'REBASE_HEAD', 
+        'REBASE_HEAD',
         'CHERRY_PICK_HEAD',
         'BISECT_LOG',
       ];

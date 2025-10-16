@@ -27,7 +27,9 @@ export class HookInstaller {
   /**
    * Install the VizRepoAssist pre-commit hook
    */
-  public async installPreCommitHook(options: HookInstallOptions = {}): Promise<HookInstallResult> {
+  public async installPreCommitHook(
+    options: HookInstallOptions = {}
+  ): Promise<HookInstallResult> {
     const { force = false, backup = true } = options;
 
     // Validate git repository
@@ -51,7 +53,7 @@ export class HookInstaller {
       // Check if hook already exists
       if (fs.existsSync(hookPath) && !force) {
         const existingContent = fs.readFileSync(hookPath, 'utf8');
-        
+
         // Check if it's already our hook
         if (existingContent.includes('VizRepoAssist Pre-commit Hook')) {
           return {
@@ -63,7 +65,8 @@ export class HookInstaller {
 
         return {
           success: false,
-          message: 'A pre-commit hook already exists. Use --force to overwrite or remove it manually.',
+          message:
+            'A pre-commit hook already exists. Use --force to overwrite or remove it manually.',
           hookPath,
         };
       }
@@ -96,7 +99,6 @@ export class HookInstaller {
         hookPath,
         backupPath,
       };
-
     } catch (error) {
       return {
         success: false,
@@ -133,7 +135,8 @@ export class HookInstaller {
       if (!hookContent.includes('VizRepoAssist Pre-commit Hook')) {
         return {
           success: false,
-          message: 'Pre-commit hook exists but is not a VizRepoAssist hook. Remove manually if needed.',
+          message:
+            'Pre-commit hook exists but is not a VizRepoAssist hook. Remove manually if needed.',
           hookPath,
         };
       }
@@ -146,7 +149,6 @@ export class HookInstaller {
         message: 'VizRepoAssist pre-commit hook removed successfully.',
         hookPath,
       };
-
     } catch (error) {
       return {
         success: false,
@@ -195,7 +197,9 @@ export class HookInstaller {
       }
 
       const hookContent = fs.readFileSync(hookPath, 'utf8');
-      const isVizRepoHook = hookContent.includes('VizRepoAssist Pre-commit Hook');
+      const isVizRepoHook = hookContent.includes(
+        'VizRepoAssist Pre-commit Hook'
+      );
       const stats = fs.statSync(hookPath);
       const executable = (stats.mode & parseInt('111', 8)) !== 0;
 

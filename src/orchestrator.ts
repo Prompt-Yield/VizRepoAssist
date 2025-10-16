@@ -49,7 +49,7 @@ export class VizRepoOrchestrator {
       // Initialize storage directory structure
       const hookInstaller = new HookInstaller(this.projectRoot);
       const initResult = hookInstaller.initializeVizRepoDirectory();
-      
+
       if (!initResult.success) {
         return initResult;
       }
@@ -59,9 +59,9 @@ export class VizRepoOrchestrator {
 
       return {
         success: true,
-        message: 'VizRepoAssist initialized successfully! Run "vizrepo install-hook" to set up automatic screenshot capture.',
+        message:
+          'VizRepoAssist initialized successfully! Run "vizrepo install-hook" to set up automatic screenshot capture.',
       };
-
     } catch (error) {
       return {
         success: false,
@@ -73,15 +73,22 @@ export class VizRepoOrchestrator {
   /**
    * Install the pre-commit hook
    */
-  public async installHook(force = false): Promise<{ success: boolean; message: string }> {
+  public async installHook(
+    force = false
+  ): Promise<{ success: boolean; message: string }> {
     const hookInstaller = new HookInstaller(this.projectRoot);
-    return await hookInstaller.installPreCommitHook({ projectRoot: this.projectRoot, force });
+    return await hookInstaller.installPreCommitHook({
+      projectRoot: this.projectRoot,
+      force,
+    });
   }
 
   /**
    * Main orchestration method - captures screenshots for all discovered routes
    */
-  public async captureScreenshots(options: OrchestrationOptions = {}): Promise<OrchestrationResult> {
+  public async captureScreenshots(
+    options: OrchestrationOptions = {}
+  ): Promise<OrchestrationResult> {
     const {
       baseUrl = 'http://localhost:3000',
       includeRoutes,
@@ -97,7 +104,8 @@ export class VizRepoOrchestrator {
       if (!this.gitManager.isGitRepository()) {
         return {
           success: false,
-          message: 'Not a git repository. Screenshots can only be captured in git repositories.',
+          message:
+            'Not a git repository. Screenshots can only be captured in git repositories.',
         };
       }
 
@@ -105,7 +113,8 @@ export class VizRepoOrchestrator {
       if (this.gitManager.isInGitOperation()) {
         return {
           success: false,
-          message: 'Git operation in progress (merge, rebase, etc.). Skipping screenshot capture.',
+          message:
+            'Git operation in progress (merge, rebase, etc.). Skipping screenshot capture.',
         };
       }
 
@@ -124,7 +133,9 @@ export class VizRepoOrchestrator {
       await this.storageManager.initialize();
       const session = await this.storageManager.createCaptureSession();
 
-      console.log(`📸 Starting screenshot capture session: ${session.sessionId}`);
+      console.log(
+        `📸 Starting screenshot capture session: ${session.sessionId}`
+      );
 
       // Discover routes
       const discovery = new RouteDiscovery({
@@ -139,7 +150,8 @@ export class VizRepoOrchestrator {
       if (routes.length === 0) {
         return {
           success: false,
-          message: 'No routes discovered. Ensure your Next.js app has pages in app/ or pages/ directory.',
+          message:
+            'No routes discovered. Ensure your Next.js app has pages in app/ or pages/ directory.',
           sessionId: session.sessionId,
         };
       }
@@ -182,17 +194,20 @@ export class VizRepoOrchestrator {
             if (result.success) {
               routeSuccess++;
             } else {
-              routeErrors.push(`${route.path} (${result.viewport.name}): ${result.error}`);
+              routeErrors.push(
+                `${route.path} (${result.viewport.name}): ${result.error}`
+              );
             }
           }
 
           if (routeSuccess > 0) {
             successCount++;
-            console.log(`✅ ${route.path}: ${routeSuccess}/2 viewports captured`);
+            console.log(
+              `✅ ${route.path}: ${routeSuccess}/2 viewports captured`
+            );
           } else {
             console.log(`❌ ${route.path}: Failed to capture any viewports`);
           }
-
         } catch (error) {
           const errorMsg = `${route.path}: ${error}`;
           routeErrors.push(errorMsg);
@@ -218,7 +233,6 @@ export class VizRepoOrchestrator {
         capturedRoutes: successCount,
         errors: hasErrors ? routeErrors : undefined,
       };
-
     } catch (error) {
       // Ensure browser cleanup
       try {
@@ -240,7 +254,7 @@ export class VizRepoOrchestrator {
    */
   private async testServerAvailability(baseUrl: string): Promise<boolean> {
     try {
-      const response = await fetch(baseUrl, { 
+      const response = await fetch(baseUrl, {
         method: 'HEAD',
         signal: AbortSignal.timeout(5000),
       });
@@ -262,7 +276,7 @@ export class VizRepoOrchestrator {
     hasChanges?: boolean;
   }> {
     const isGitRepo = this.gitManager.isGitRepository();
-    
+
     let currentBranch: string | undefined;
     let currentCommit: string | undefined;
     let hasChanges: boolean | undefined;

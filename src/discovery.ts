@@ -46,16 +46,18 @@ export class RouteDiscovery {
    */
   private async scanAppDirectory(): Promise<DiscoveredRoute[]> {
     const appDir = path.join(this.options.projectRoot, 'app');
-    
+
     if (!this.directoryExists(appDir)) {
       return [];
     }
 
     const routes: DiscoveredRoute[] = [];
-    
+
     // Always add root route
-    if (this.fileExists(path.join(appDir, 'page.tsx')) || 
-        this.fileExists(path.join(appDir, 'page.js'))) {
+    if (
+      this.fileExists(path.join(appDir, 'page.tsx')) ||
+      this.fileExists(path.join(appDir, 'page.js'))
+    ) {
       routes.push({
         path: '/',
         fullUrl: this.buildUrl('/'),
@@ -74,7 +76,7 @@ export class RouteDiscovery {
    */
   private async scanPagesDirectory(): Promise<DiscoveredRoute[]> {
     const pagesDir = path.join(this.options.projectRoot, 'pages');
-    
+
     if (!this.directoryExists(pagesDir)) {
       return [];
     }
@@ -91,8 +93,8 @@ export class RouteDiscovery {
    * Recursively scan directory for route files
    */
   private async scanDirectoryRecursive(
-    dir: string, 
-    routePrefix: string, 
+    dir: string,
+    routePrefix: string,
     routes: DiscoveredRoute[],
     routerType: 'app' | 'pages' = 'app'
   ): Promise<void> {
@@ -111,8 +113,10 @@ export class RouteDiscovery {
 
           if (routerType === 'app') {
             // Check for page.tsx/page.js in this directory
-            if (this.fileExists(path.join(subPath, 'page.tsx')) || 
-                this.fileExists(path.join(subPath, 'page.js'))) {
+            if (
+              this.fileExists(path.join(subPath, 'page.tsx')) ||
+              this.fileExists(path.join(subPath, 'page.js'))
+            ) {
               routes.push({
                 path: newRoutePrefix,
                 fullUrl: this.buildUrl(newRoutePrefix),
@@ -120,10 +124,20 @@ export class RouteDiscovery {
               });
             }
             // Continue scanning subdirectories
-            await this.scanDirectoryRecursive(subPath, newRoutePrefix, routes, routerType);
+            await this.scanDirectoryRecursive(
+              subPath,
+              newRoutePrefix,
+              routes,
+              routerType
+            );
           } else {
             // Pages router - continue scanning
-            await this.scanDirectoryRecursive(subPath, newRoutePrefix, routes, routerType);
+            await this.scanDirectoryRecursive(
+              subPath,
+              newRoutePrefix,
+              routes,
+              routerType
+            );
           }
         } else if (entry.isFile() && routerType === 'pages') {
           // Handle pages router files
@@ -145,21 +159,27 @@ export class RouteDiscovery {
   /**
    * Convert page file name to route path
    */
-  private getRouteFromPageFile(fileName: string, routePrefix: string): string | null {
+  private getRouteFromPageFile(
+    fileName: string,
+    routePrefix: string
+  ): string | null {
     // Skip non-page files
     if (!fileName.match(/\.(tsx?|jsx?)$/)) {
       return null;
     }
 
     // Skip special files
-    if (['_app', '_document', '_error', '404', '500'].some(special => 
-      fileName.startsWith(special))) {
+    if (
+      ['_app', '_document', '_error', '404', '500'].some((special) =>
+        fileName.startsWith(special)
+      )
+    ) {
       return null;
     }
 
     // Convert file name to route
     const baseName = fileName.replace(/\.(tsx?|jsx?)$/, '');
-    
+
     if (baseName === 'index') {
       return routePrefix || '/';
     }
@@ -173,15 +193,15 @@ export class RouteDiscovery {
   private shouldSkipDirectory(dirName: string): boolean {
     // Skip Next.js special directories and route groups
     const skipPatterns = [
-      'api',           // API routes
-      '_',             // Private folders (start with underscore)
-      '(',             // Route groups (start with parenthesis)
+      'api', // API routes
+      '_', // Private folders (start with underscore)
+      '(', // Route groups (start with parenthesis)
       'node_modules',
       '.next',
       '.git',
     ];
 
-    return skipPatterns.some(pattern => dirName.startsWith(pattern));
+    return skipPatterns.some((pattern) => dirName.startsWith(pattern));
   }
 
   /**
@@ -192,8 +212,8 @@ export class RouteDiscovery {
 
     // Apply exclusions first
     if (this.options.exclude?.length) {
-      filtered = filtered.filter(route => {
-        return !this.options.exclude!.some(pattern => 
+      filtered = filtered.filter((route) => {
+        return !this.options.exclude!.some((pattern) =>
           this.matchesPattern(route.path, pattern)
         );
       });
@@ -201,8 +221,8 @@ export class RouteDiscovery {
 
     // Apply inclusions (if specified, only include matching routes)
     if (this.options.include?.length) {
-      filtered = filtered.filter(route => {
-        return this.options.include!.some(pattern => 
+      filtered = filtered.filter((route) => {
+        return this.options.include!.some((pattern) =>
           this.matchesPattern(route.path, pattern)
         );
       });
@@ -216,9 +236,7 @@ export class RouteDiscovery {
    */
   private matchesPattern(path: string, pattern: string): boolean {
     // Convert glob-like pattern to regex
-    const regexPattern = pattern
-      .replace(/\*/g, '.*')
-      .replace(/\?/g, '.');
+    const regexPattern = pattern.replace(/\*/g, '.*').replace(/\?/g, '.');
 
     const regex = new RegExp(`^${regexPattern}$`);
     return regex.test(path);
